@@ -1,14 +1,33 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { RoomJoin } from "@/components/RoomJoin";
+import { StreamerView } from "@/components/StreamerView";
+import { ViewerView } from "@/components/ViewerView";
+
+type Mode = 'join' | 'streamer' | 'viewer';
 
 const Index = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
+  const [mode, setMode] = useState<Mode>('join');
+  const [roomId, setRoomId] = useState('');
+
+  const handleJoinRoom = (id: string, userMode: 'streamer' | 'viewer') => {
+    setRoomId(id);
+    setMode(userMode);
+  };
+
+  const handleLeaveRoom = () => {
+    setMode('join');
+    setRoomId('');
+  };
+
+  if (mode === 'join') {
+    return <RoomJoin onJoinRoom={handleJoinRoom} />;
+  }
+
+  if (mode === 'streamer') {
+    return <StreamerView roomId={roomId} onLeaveRoom={handleLeaveRoom} />;
+  }
+
+  return <ViewerView roomId={roomId} onLeaveRoom={handleLeaveRoom} />;
 };
 
 export default Index;
