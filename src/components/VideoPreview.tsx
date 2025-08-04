@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, forwardRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -8,14 +8,16 @@ interface VideoPreviewProps {
   stream?: MediaStream;
 }
 
-export function VideoPreview({ isStreaming, videoEnabled, stream }: VideoPreviewProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
+const VideoPreview = forwardRef<HTMLVideoElement, VideoPreviewProps>(
+  ({ isStreaming, videoEnabled, stream }, ref) => {
+    const internalRef = useRef<HTMLVideoElement>(null);
+    const videoRef = ref || internalRef;
 
   useEffect(() => {
-    if (videoRef.current && stream) {
+    if (videoRef && 'current' in videoRef && videoRef.current && stream) {
       videoRef.current.srcObject = stream;
     }
-  }, [stream]);
+  }, [stream, videoRef]);
 
   return (
     <Card className="relative overflow-hidden bg-card/50 backdrop-blur-sm border border-border/50">
@@ -50,4 +52,8 @@ export function VideoPreview({ isStreaming, videoEnabled, stream }: VideoPreview
       </div>
     </Card>
   );
-}
+});
+
+VideoPreview.displayName = "VideoPreview";
+
+export { VideoPreview };
